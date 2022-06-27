@@ -1,33 +1,119 @@
-*NOTE:* This file is a template that you can use to create the README for your project. The *TODO* comments below will highlight the information you should be sure to include.
+# E2E in Azure ML: Data to Model deployment of Heart Failure Prediction
 
-# Your Project Title Here
+This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram:
 
-*TODO:* Write a short introduction to your project.
+![workflow_diagam](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/workflow_diagram.png)
+
+ 
 
 ## Project Set Up and Installation
-*OPTIONAL:* If your project has any special installation steps, this is where you should put it. To turn this project into a professional portfolio project, you are encouraged to explain how to set up this project in AzureML.
+Project requirements:
+
+* Jupyter Notebook
+* Python 3.6
+* Azure ML
+
+To perform this project tasks, requires to setup azure ML studio workspace, compute instance/cluster and Azure SDK.
 
 ## Dataset
 
 ### Overview
-*TODO*: Explain about the data you are using and where you got it from.
+The datset used for this project is a Heart Failure Prediction dataset from [Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data).  This dataset containes 12 features and a label to classify death by heart failure. 
 
 ### Task
-*TODO*: Explain the task you are going to be solving with this dataset and the features you will be using for it.
+The primary task of this project is to predict the mortality casused by Heart Failure based on 12 features. here is the list of features and label and its description:
+
+1. age: Age of a person
+2. anaemia: Decrease of red blood cells of hemoglobin (boolean)
+3. creatinine_phosphokinase: Level of the CPK enzyme in the blood (mcg/L)
+4. diabetes: If the patient has diabetes (boolean)
+5. ejection_fraction: Percentage of blood leaving the heart at each contraction (percentage)
+6. high_blood_pressure: If the patient has hypertension (boolean)
+7. platelets: Platelets in the blood (kiloplatelets/mL)
+8. serum_creatinine: Level of serum sodium in the blood (mEq/L)
+9. serum_sodium: Level of serum sodium in the blood (mEq/L)
+10. Time: follow up period(days)
+11. Smoking: True-1, False-0
+12. sex: Woman or man (binary)
+
+*DEATH_EVENT*: Label (True- 1, False-0) 
 
 ### Access
-*TODO*: Explain how you are accessing the data in your workspace.
+
+This is a publicly avaiable Kaggle dataset. As part of the project, uploaded this dataset to this project repository for it use.
 
 ## Automated ML
-*TODO*: Give an overview of the `automl` settings and configuration you used for this experiment
+AutoML (Automated Machine Learning) essentially automates all accepts of machine learning process i.e, feature engineering, selection of hyperparameters, model training etc.
+
+AutoML config class is used for submittting an automated ML experiment in the Azure Machine learning. Auto ML settings helps to moderate how we want our experiment to be run. In this case, wanted to experiment to timeout in 30 minutes, with max iterations to be executed in parallel is 5 and cross validation to perform is 2. Although there are many metrics, I choose to pick "accuracy" metric, as it would be good metric for simple datasets. These automl settings are passed on to AutoMLConfig class along with the compute instance, data, task type and label.
+
+```python
+# Automl settings
+automl_settings = {"experiment_timeout_minutes": 30,
+                   "max_concurrent_iterations": 5,
+                   "n_cross_validations": 2,
+                   "primary_metric": 'accuracy',
+                   "verbosity": logging.INFO
+                  }
+
+# Defining automl config
+automl_config = AutoMLConfig(task='classification',
+                             compute_target=compute_target,
+                             training_data=data,
+                             label_column_name='DEATH_EVENT',
+                             **automl_settings)
+```
 
 ### Results
 *TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
 
 *TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
 
+The best model found using AutoML method is Voting Ensemble, which is based on 7 different ensemble models each with specific weightage as shown below:
+
+
+
+
+
+Some areas of improvement for future AutoML experiments are:
+
+- Need to try different sampling methods such as Grid search etc. need to be tested (as it is more comprehensive compared to Random Search)
+- Need to try different termination policies and compare how it performes.
+
+ 
+
 ## Hyperparameter Tuning
-*TODO*: What kind of model did you choose for this experiment and why? Give an overview of the types of parameters and their ranges used for the hyperparameter search
+To predict heart failure, used Random Forest model and to fine tune the model parameters, used the Azure HyperDrive functionality. HyperDrive needs parameter sampler and early stopping policy to be feed in. For parameter sampling, used Random paramter sampling to sample over a hyperparameter search space. Picked this because this it is quicker than Grid search sampler as the parameter selection is random in nature. With respect to early stopping, I used Bandit early terminatin policy. Reason for selecting Bandit early termination policy is that it allows to select an interval and once it exceeds the specified interval, this policy will ends the job. It easy to use and provides more flexibility over other stopping policies such as median stopping.
+
+Hyper Drive config setting guides in picking the best model. For this configuration, along with the parameter sampling and policy, used "accuracy" as primary metric as it is good metric for simple datasets, and the goal of this metric is to maximize as higher the accuracy better the model is. While the max total runs is 20 and concurrently it can run upto 4 runs.
+
+```Python
+# Early termination policy. This is not required if you are using Bayesian sampling.
+early_termination_policy = BanditPolicy(evaluation_interval=2, slack_factor=0.1)
+
+#Create the different params that you will be using during training
+parameter_space = {"--n_estimators": choice(10, 20, 40), "--min_samples_split": choice(2,4,6)}
+param_sampling = RandomParameterSampling(parameter_space = parameter_space)
+
+# Setup environment for your training run
+sklearn_env = Environment.from_conda_specification(name='sklearn-env', file_path='conda_dependencies.yml')
+
+# Create a ScriptRunConfig Object to specify the configuration details of your training job
+src = ScriptRunConfig(source_directory = ".",
+                      script='train.py',
+                      compute_target=cluster_name,
+                      environment = sklearn_env)
+
+hyperdrive_run_config = HyperDriveConfig(run_config=src,
+                                         hyperparameter_sampling=param_sampling,
+                                         primary_metric_name='Accuracy',
+                                         primary_metric_goal= PrimaryMetricGoal("MAXIMIZE"),
+                                         max_total_runs=20,
+                                         max_concurrent_runs=4,
+                                         policy=early_termination_policy)
+```
+
+Reasons for picking the Random forest model is that it is a non-linear non-statistical tree classifier. As it is non-statistical model, there is no prior assumptions involved. And also, it requires little data preparation and robust against co-linearity & outliers.
 
 
 ### Results
@@ -35,8 +121,40 @@
 
 *TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
 
+The best model run accuracy found using HyperDrive method is 75% as shown below:
+
+
+
+Some areas of improvement for future experiments with HyperDrive is:
+
+- Need to try with different classification models with HyperDrive. For this experiment, used Random Forest mode, In the feature, would like to test a statistical model and also other ensumble models like XGBoost.  
+- Need to try with more wider range of hyper parameters in the HyperDrive
+
 ## Model Deployment
 *TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
+
+
+
+As part of the project, trained both AutoML model and also the Hyper drive based model. Best model picked out of these two methods is Voting Ensemble model using Auto ML method. It has an accuracy of 87%. This model is then deployed using Azure container Instance (ACI). To deploy the model, following code is used:
+
+```Python
+# Deploying the model
+deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
+service = Model.deploy(ws, 
+                       "heart_failure_classify_service", 
+                       [best_automl_model], 
+                       inference_config, 
+                       deployment_config)
+
+service.wait_for_deployment(show_output = True)
+```
+
+Deployment was successful, we can see following screenshots to confirm that:
+
+To test the deployed model, following two methods where used:
+
+* REST endpoint was used in the endpoint.py script to test from command line. 
+* Request.post method was used in the notebook with Scoring_uri and test data to get the response.
 
 ## Screen Recording
 *TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
@@ -44,5 +162,3 @@
 - Demo of the deployed  model
 - Demo of a sample request sent to the endpoint and its response
 
-## Standout Suggestions
-*TODO (Optional):* This is where you can provide information about any standout suggestions that you have attempted.
