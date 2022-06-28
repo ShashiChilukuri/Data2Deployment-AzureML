@@ -2,7 +2,7 @@
 
 This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training methods were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram (Source: udacity):
 
-![workflow_diagam](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/workflow_diagram.png)
+![workflow_diagam](Assets/workflow_diagram.png)
 
  
 
@@ -69,23 +69,23 @@ The best model found using AutoML method is Voting Ensemble with an accuracy of 
 
 Here is the screen shot of model experiment submitted.
 
-![image-2](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl1.png)
+![image-2](Assets/automl1.png)
 
-![image-3](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl2.png)
+![image-3](Assets/automl2.png)
 
 Here is the screenshot of AutoML job was running and when it is completed:
 
-![image-4](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl3.png)
+![image-4](Assets/automl3.png)
 
-![image-5](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl4.png)
+![image-5](Assets/automl4.png)
 
 Here is the best model with accuracy:
 
-![image-6](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl5.png)
+![image-6](Assets/automl5.png)
 
 Here is the snapshot of run details:
 
-![image-7](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl6.png)
+![image-7](Assets/automl6.png)
 
 Here are the parameters for the AutoML model:
 
@@ -127,11 +127,11 @@ Here are the parameters for the AutoML model:
     }
 ```
 
-![image-8](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl7.png)
+![image-8](Assets/automl7.png)
 
 Here is the best model pipeline with parameters:
 
-![image-9](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl8.png)
+![image-9](Assets/automl8.png)
 
 Some areas of improvement for future AutoML experiments are:
 
@@ -179,11 +179,11 @@ Reasons for picking the Random forest model is that it is a non-linear non-stati
 
 The best model run accuracy found using HyperDrive method is 78.8%. Below is the screenshot of Run Details:
 
-![image-10](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive1.png)
+![image-10](Assets/hyperdrive1.png)
 
 Here is the screenshot of  job completed successfully:
 
-![image-11](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive2.png)
+![image-11](Assets/hyperdrive2.png)
 
 Below screenshot shows the best model accuracy and its parameters:
 
@@ -192,7 +192,7 @@ Below screenshot shows the best model accuracy and its parameters:
   * N.o trees in the forest: 20
   * Min Samples to split: 2
 
-![image-12](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive3.png)
+![image-12](Assets/hyperdrive3.png)
 
 Some areas of improvement for future experiments with HyperDrive is:
 
@@ -202,7 +202,7 @@ Some areas of improvement for future experiments with HyperDrive is:
 ## Model Deployment
 *TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
 
-![image-z](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy2.png)
+![image-z](Assets/deploy2.png)
 
 As part of the project, trained both AutoML model and also the Hyper drive based model. Best model picked out of these two methods is Voting Ensemble model using Auto ML method. It has an accuracy of 86.2%. This model is then deployed using Azure container Instance (ACI). To deploy the model, following code is used:
 
@@ -220,23 +220,23 @@ service.wait_for_deployment(show_output = True)
 
 Here is the screenshot of model deployment in progress
 
-![image-14](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy3.png)
+![image-14](Assets/deploy3.png)
 
 Deployment was successful, we can see following screenshots to confirm that:
 
-![image-15](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy4.png)
+![image-15](Assets/deploy4.png)
 
-![image-16](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy5.png)
+![image-16](Assets/deploy5.png)
 
 To test the deployed model, following two methods where used:
 
 1. REST endpoint was used in the endpoint.py script to test from command line as shown below. 
 
-   ![image-17](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/test1.png)
+   ![image-17](Assets/test1.png)
 
 2. Request.post method was used in the notebook with Scoring_uri and test data to get the response.
 
-   ![image-17](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/test2.png)
+   ![image-17](Assets/test2.png)
 
 ## Screen Recording
 Here is the link to the screencast: [E2E with Azure](https://www.youtube.com/watch?v=Lzl7Y3H7leo)
