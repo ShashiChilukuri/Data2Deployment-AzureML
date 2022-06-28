@@ -13,7 +13,7 @@ from sklearn.metrics import mean_squared_error
 from azureml.data.dataset_factory import TabularDatasetFactory
 
 # Creating tabular data from the data path
-data_path = "https://github.com/ShashiChilukuri/Data2Deployment-AzureML/blob/bc2160defa96caf4a11b509e1d7ce59a47bab792/heart_failure_clinical_records_dataset.csv"
+data_path = path = "https://raw.githubusercontent.com/ShashiChilukuri/Data2Deployment-AzureML/main/heart_failure_clinical_records_dataset.csv"
 data = TabularDatasetFactory.from_delimited_files(data_path)
 
 #Saving model for current iteration

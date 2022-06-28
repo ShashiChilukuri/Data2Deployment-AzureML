@@ -1,6 +1,6 @@
-# E2E in Azure ML: Data to Model deployment of Heart Failure Prediction
+# Data to Model deployment of Heart Failure Prediction in Azure ML
 
-This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram:
+This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training methods were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram:
 
 ![workflow_diagam](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/workflow_diagram.png)
 
@@ -10,7 +10,7 @@ This is a capstone project as part of the Udacity Azure ML Nanodegree program. T
 Project requirements:
 
 * Jupyter Notebook
-* Python 3.6
+* Python 3.8
 * Azure ML
 
 To perform this project tasks, requires to setup azure ML studio workspace, compute instance/cluster and Azure SDK.
@@ -73,6 +73,22 @@ The best model found using AutoML method is Voting Ensemble, which is based on 7
 
 
 
+![image-20220627205552309](/Users/shashi/Library/Application Support/typora-user-images/image-20220627205552309.png)
+
+![image-20220627205633532](/Users/shashi/Library/Application Support/typora-user-images/image-20220627205633532.png)
+
+
+
+![image-20220627210826530](/Users/shashi/Library/Application Support/typora-user-images/image-20220627210826530.png)
+
+![image-20220627211250856](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211250856.png)
+
+![image-20220627211328967](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211328967.png)
+
+![image-20220627211514482](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211514482.png)
+
+![image-20220627211710453](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211710453.png)
+
 
 
 Some areas of improvement for future AutoML experiments are:
@@ -123,6 +139,24 @@ Reasons for picking the Random forest model is that it is a non-linear non-stati
 
 The best model run accuracy found using HyperDrive method is 75% as shown below:
 
+![image-20220627212025064](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212025064.png)
+
+
+
+![image-20220627212539331](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212539331.png)
+
+![image-20220627212616130](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212616130.png)
+
+
+
+
+
+
+
+
+
+
+
 
 
 Some areas of improvement for future experiments with HyperDrive is:
@@ -133,15 +167,15 @@ Some areas of improvement for future experiments with HyperDrive is:
 ## Model Deployment
 *TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
 
+![image-20220627212941285](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212941285.png)
 
-
-As part of the project, trained both AutoML model and also the Hyper drive based model. Best model picked out of these two methods is Voting Ensemble model using Auto ML method. It has an accuracy of 87%. This model is then deployed using Azure container Instance (ACI). To deploy the model, following code is used:
+As part of the project, trained both AutoML model and also the Hyper drive based model. Best model picked out of these two methods is Voting Ensemble model using Auto ML method. It has an accuracy of 86.2%. This model is then deployed using Azure container Instance (ACI). To deploy the model, following code is used:
 
 ```Python
 # Deploying the model
 deployment_config = AciWebservice.deploy_configuration(cpu_cores = 1, memory_gb = 1)
 service = Model.deploy(ws, 
-                       "heart_failure_classify_service", 
+                       "myservice", 
                        [best_automl_model], 
                        inference_config, 
                        deployment_config)
@@ -149,15 +183,31 @@ service = Model.deploy(ws,
 service.wait_for_deployment(show_output = True)
 ```
 
+![image-20220627213303344](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213303344.png)
+
 Deployment was successful, we can see following screenshots to confirm that:
+
+![image-20220627213651720](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213651720.png)
+
+![image-20220627213733073](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213733073.png)
 
 To test the deployed model, following two methods where used:
 
 * REST endpoint was used in the endpoint.py script to test from command line. 
+
+  ![image-20220627214719660](/Users/shashi/Library/Application Support/typora-user-images/image-20220627214719660.png)
+
 * Request.post method was used in the notebook with Scoring_uri and test data to get the response.
 
+  ![image-20220627214549261](/Users/shashi/Library/Application Support/typora-user-images/image-20220627214549261.png)
+
 ## Screen Recording
+Screencast
+
+https://www.youtube.com/watch?v=Lzl7Y3H7leo
+
 *TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
+
 - A working model
 - Demo of the deployed  model
 - Demo of a sample request sent to the endpoint and its response
