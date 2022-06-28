@@ -1,6 +1,6 @@
 # Data to Model deployment of Heart Failure Prediction in Azure ML
 
-This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training methods were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram:
+This is a capstone project as part of the Udacity Azure ML Nanodegree program. The aim of this project is the perform all the tasks from picking the dataset to deployment of the model in the Azure Machine Learning. As part of this project, I have used a Heart Failure Prediction dataset ([from Kaggle](https://www.kaggle.com/datasets/andrewmvd/heart-failure-clinical-data)) to build the prediciton classifier. The primary goal of this binary classifier is to predict the mortality casused by Heart Failure based on 12 features. To perform this task with best model, two types of training methods were done namely - Azure AutoML and HyperDrive. From each of these methods, a model is created. The model which perfromed best is selected for deployment and later consumed its REST endpoint. Below is the project workflow diagram (Source: udacity):
 
 ![workflow_diagam](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/workflow_diagram.png)
 
@@ -13,7 +13,7 @@ Project requirements:
 * Python 3.8
 * Azure ML
 
-To perform this project tasks, requires to setup azure ML studio workspace, compute instance/cluster and Azure SDK.
+Note: To perform this project tasks, requires to setup azure ML studio workspace, compute instance/cluster and Azure SDK.
 
 ## Dataset
 
@@ -65,38 +65,78 @@ automl_config = AutoMLConfig(task='classification',
 ```
 
 ### Results
-*TODO*: What are the results you got with your automated ML model? What were the parameters of the model? How could you have improved it?
+The best model found using AutoML method is Voting Ensemble with an accuracy of 86.2%, which is based on 7 different ensemble models each with specific weightage.
 
-*TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
+Here is the screen shot of model experiment submitted.
 
-The best model found using AutoML method is Voting Ensemble, which is based on 7 different ensemble models each with specific weightage as shown below:
+![image-2](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl1.png)
 
+![image-3](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl2.png)
 
+Here is the screenshot of AutoML job was running and when it is completed:
 
-![image-20220627205552309](/Users/shashi/Library/Application Support/typora-user-images/image-20220627205552309.png)
+![image-4](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl3.png)
 
-![image-20220627205633532](/Users/shashi/Library/Application Support/typora-user-images/image-20220627205633532.png)
+![image-5](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl4.png)
 
+Here is the best model with accuracy:
 
+![image-6](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl5.png)
 
-![image-20220627210826530](/Users/shashi/Library/Application Support/typora-user-images/image-20220627210826530.png)
+Here is the snapshot of run details:
 
-![image-20220627211250856](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211250856.png)
+![image-7](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl6.png)
 
-![image-20220627211328967](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211328967.png)
+Here are the parameters for the AutoML model:
 
-![image-20220627211514482](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211514482.png)
+```Python
+"properties": {
+        "num_iterations": "1000",
+        "training_type": "TrainFull",
+        "acquisition_function": "EI",
+        "primary_metric": "accuracy",
+        "train_split": "0",
+        "acquisition_parameter": "0",
+        "num_cross_validation": "2",
+        "target": "Compute-Standard",
+        "AMLSettingsJsonString": '{"path":null,"name":"ClassifyHeartFailure-AutoML","subscription_id":"6971f5ac-8af1-446e-8034-05acea24681f","resource_group":"aml-quickstarts-199609","workspace_name":"quick-starts-ws-199609","region":"southcentralus","compute_target":"Compute-Standard","spark_service":null,"azure_service":"remote","many_models":false,"pipeline_fetch_max_batch_size":1,"enable_batch_run":true,"enable_run_restructure":false,"start_auxiliary_runs_before_parent_complete":false,"enable_code_generation":true,"iterations":1000,"primary_metric":"accuracy","task_type":"classification","positive_label":null,"data_script":null,"test_size":0.0,"test_include_predictions_only":false,"validation_size":0.0,"n_cross_validations":2,"y_min":null,"y_max":null,"num_classes":null,"featurization":"auto","_ignore_package_version_incompatibilities":false,"is_timeseries":false,"max_cores_per_iteration":1,"max_concurrent_iterations":5,"iteration_timeout_minutes":null,"mem_in_mb":null,"enforce_time_on_windows":false,"experiment_timeout_minutes":30,"experiment_exit_score":null,"partition_column_names":null,"whitelist_models":null,"blacklist_algos":["TensorFlowLinearClassifier","TensorFlowDNN"],"supported_models":["SGD","XGBoostClassifier","AveragedPerceptronClassifier","BernoulliNaiveBayes","KNN","DecisionTree","LogisticRegression","TensorFlowLinearClassifier","ExtremeRandomTrees","MultinomialNaiveBayes","RandomForest","TabnetClassifier","TensorFlowDNN","LinearSVM","GradientBoosting","SVM","LightGBM"],"private_models":[],"auto_blacklist":true,"blacklist_samples_reached":false,"exclude_nan_labels":true,"verbosity":20,"_debug_log":"azureml_automl.log","show_warnings":false,"model_explainability":true,"service_url":null,"sdk_url":null,"sdk_packages":null,"enable_onnx_compatible_models":false,"enable_split_onnx_featurizer_estimator_models":false,"vm_type":"STANDARD_DS3_V2","telemetry_verbosity":20,"send_telemetry":true,"enable_dnn":false,"scenario":"SDK-1.13.0","environment_label":null,"save_mlflow":false,"enable_categorical_indicators":false,"force_text_dnn":false,"enable_feature_sweeping":true,"enable_early_stopping":true,"early_stopping_n_iters":10,"arguments":null,"dataset_id":"3689506b-c445-4bd7-a527-46695ffe5ece","hyperdrive_config":null,"validation_dataset_id":null,"run_source":null,"metrics":null,"enable_metric_confidence":false,"enable_ensembling":true,"enable_stack_ensembling":true,"ensemble_iterations":15,"enable_tf":false,"enable_subsampling":null,"subsample_seed":null,"enable_nimbusml":false,"enable_streaming":false,"force_streaming":false,"track_child_runs":true,"allowed_private_models":[],"label_column_name":"DEATH_EVENT","weight_column_name":null,"cv_split_column_names":null,"enable_local_managed":false,"_local_managed_run_id":null,"cost_mode":1,"lag_length":0,"metric_operation":"maximize","preprocess":true}',
+        "DataPrepJsonString": '{\\"training_data\\": {\\"datasetId\\": \\"3689506b-c445-4bd7-a527-46695ffe5ece\\"}, \\"datasets\\": 0}',
+        "EnableSubsampling": None,
+        "runTemplate": "AutoML",
+        "azureml.runsource": "automl",
+        "display_task_type": "classification",
+        "dependencies_versions": '{"azureml-widgets": "1.42.0", "azureml-training-tabular": "1.42.0", "azureml-train": "1.42.0", "azureml-train-restclients-hyperdrive": "1.42.0", "azureml-train-core": "1.42.0", "azureml-train-automl": "1.42.0", "azureml-train-automl-runtime": "1.42.0", "azureml-train-automl-client": "1.42.0", "azureml-tensorboard": "1.42.0", "azureml-telemetry": "1.42.0", "azureml-sdk": "1.42.0", "azureml-samples": "0 unknown", "azureml-responsibleai": "1.42.0", "azureml-pipeline": "1.42.0", "azureml-pipeline-steps": "1.42.0", "azureml-pipeline-core": "1.42.0", "azureml-opendatasets": "1.42.0", "azureml-mlflow": "1.42.0", "azureml-interpret": "1.42.0", "azureml-inference-server-http": "0.4.13", "azureml-explain-model": "1.42.0", "azureml-defaults": "1.42.0", "azureml-dataset-runtime": "1.42.0", "azureml-dataprep": "4.0.1", "azureml-dataprep-rslex": "2.6.1", "azureml-dataprep-native": "38.0.0", "azureml-datadrift": "1.42.0", "azureml-core": "1.42.0", "azureml-contrib-services": "1.42.0", "azureml-contrib-server": "1.42.0", "azureml-contrib-reinforcementlearning": "1.42.0", "azureml-contrib-pipeline-steps": "1.42.0", "azureml-contrib-notebook": "1.42.0", "azureml-contrib-fairness": "1.42.0", "azureml-contrib-dataset": "1.42.0", "azureml-contrib-automl-pipeline-steps": "1.42.0", "azureml-cli-common": "1.42.0", "azureml-automl-runtime": "1.42.0", "azureml-automl-dnn-nlp": "1.42.0", "azureml-automl-core": "1.42.0", "azureml-accel-models": "1.42.0"}',
+        "_aml_system_scenario_identification": "Remote.Parent",
+        "ClientType": "SDK",
+        "environment_cpu_name": "AzureML-AutoML",
+        "environment_cpu_label": "prod",
+        "environment_gpu_name": "AzureML-AutoML-GPU",
+        "environment_gpu_label": "prod",
+        "root_attribution": "automl",
+        "attribution": "AutoML",
+        "Orchestrator": "AutoML",
+        "CancelUri": "https://southcentralus.api.azureml.ms/jasmine/v1.0/subscriptions/6971f5ac-8af1-446e-8034-05acea24681f/resourceGroups/aml-quickstarts-199609/providers/Microsoft.MachineLearningServices/workspaces/quick-starts-ws-199609/experimentids/6f19f0b0-3cd6-42fd-aa9f-d8152ae5cdf2/cancel/AutoML_580b1e1a-0ea0-4980-9412-3c88532c0271",
+        "ClientSdkVersion": "1.42.0.post1",
+        "snapshotId": "00000000-0000-0000-0000-000000000000",
+        "SetupRunId": "AutoML_580b1e1a-0ea0-4980-9412-3c88532c0271_setup",
+        "SetupRunContainerId": "dcid.AutoML_580b1e1a-0ea0-4980-9412-3c88532c0271_setup",
+        "FeaturizationRunJsonPath": "featurizer_container.json",
+        "FeaturizationRunId": "AutoML_580b1e1a-0ea0-4980-9412-3c88532c0271_featurize",
+        "ProblemInfoJsonString": '{"dataset_num_categorical": 0, "is_sparse": false, "subsampling": false, "has_extra_col": true, "dataset_classes": 2, "dataset_features": 12, "dataset_samples": 299, "single_frequency_class_detected": false}',
+        "ModelExplainRunId": "AutoML_580b1e1a-0ea0-4980-9412-3c88532c0271_ModelExplain",
+    }
+```
 
-![image-20220627211710453](/Users/shashi/Library/Application Support/typora-user-images/image-20220627211710453.png)
+![image-8](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl7.png)
 
+Here is the best model pipeline with parameters:
 
+![image-9](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/automl8.png)
 
 Some areas of improvement for future AutoML experiments are:
 
-- Need to try different sampling methods such as Grid search etc. need to be tested (as it is more comprehensive compared to Random Search)
+- Need to try different sampling methods such as Grid search etc. (as it is more comprehensive compared to Random Search)
 - Need to try different termination policies and compare how it performes.
-
- 
 
 ## Hyperparameter Tuning
 To predict heart failure, used Random Forest model and to fine tune the model parameters, used the Azure HyperDrive functionality. HyperDrive needs parameter sampler and early stopping policy to be feed in. For parameter sampling, used Random paramter sampling to sample over a hyperparameter search space. Picked this because this it is quicker than Grid search sampler as the parameter selection is random in nature. With respect to early stopping, I used Bandit early terminatin policy. Reason for selecting Bandit early termination policy is that it allows to select an interval and once it exceeds the specified interval, this policy will ends the job. It easy to use and provides more flexibility over other stopping policies such as median stopping.
@@ -137,27 +177,22 @@ Reasons for picking the Random forest model is that it is a non-linear non-stati
 
 *TODO* Remeber to provide screenshots of the `RunDetails` widget as well as a screenshot of the best model trained with it's parameters.
 
-The best model run accuracy found using HyperDrive method is 75% as shown below:
+The best model run accuracy found using HyperDrive method is 78.8%. Below is the screenshot of Run Details:
 
-![image-20220627212025064](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212025064.png)
+![image-10](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive1.png)
 
+Here is the screenshot of  job completed successfully:
 
+![image-11](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive2.png)
 
-![image-20220627212539331](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212539331.png)
+Below screenshot shows the best model accuracy and its parameters:
 
-![image-20220627212616130](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212616130.png)
+* Best model accuracy: 78.8%
+* Best model Paramteters:
+  * N.o trees in the forest: 20
+  * Min Samples to split: 2
 
-
-
-
-
-
-
-
-
-
-
-
+![image-12](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/hyperdrive3.png)
 
 Some areas of improvement for future experiments with HyperDrive is:
 
@@ -167,7 +202,7 @@ Some areas of improvement for future experiments with HyperDrive is:
 ## Model Deployment
 *TODO*: Give an overview of the deployed model and instructions on how to query the endpoint with a sample input.
 
-![image-20220627212941285](/Users/shashi/Library/Application Support/typora-user-images/image-20220627212941285.png)
+![image-z](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy2.png)
 
 As part of the project, trained both AutoML model and also the Hyper drive based model. Best model picked out of these two methods is Voting Ensemble model using Auto ML method. It has an accuracy of 86.2%. This model is then deployed using Azure container Instance (ACI). To deploy the model, following code is used:
 
@@ -183,32 +218,26 @@ service = Model.deploy(ws,
 service.wait_for_deployment(show_output = True)
 ```
 
-![image-20220627213303344](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213303344.png)
+Here is the screenshot of model deployment in progress
+
+![image-14](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy3.png)
 
 Deployment was successful, we can see following screenshots to confirm that:
 
-![image-20220627213651720](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213651720.png)
+![image-15](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy4.png)
 
-![image-20220627213733073](/Users/shashi/Library/Application Support/typora-user-images/image-20220627213733073.png)
+![image-16](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/deploy5.png)
 
 To test the deployed model, following two methods where used:
 
-* REST endpoint was used in the endpoint.py script to test from command line. 
+1. REST endpoint was used in the endpoint.py script to test from command line as shown below. 
 
-  ![image-20220627214719660](/Users/shashi/Library/Application Support/typora-user-images/image-20220627214719660.png)
+   ![image-17](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/test1.png)
 
-* Request.post method was used in the notebook with Scoring_uri and test data to get the response.
+2. Request.post method was used in the notebook with Scoring_uri and test data to get the response.
 
-  ![image-20220627214549261](/Users/shashi/Library/Application Support/typora-user-images/image-20220627214549261.png)
+   ![image-17](/Users/shashi/Documents/Job/Azure/Capstone-MLE_with_Azure/Data2Deployment-AzureML/Assets/test2.png)
 
 ## Screen Recording
-Screencast
-
-https://www.youtube.com/watch?v=Lzl7Y3H7leo
-
-*TODO* Provide a link to a screen recording of the project in action. Remember that the screencast should demonstrate:
-
-- A working model
-- Demo of the deployed  model
-- Demo of a sample request sent to the endpoint and its response
+Here is the link to the screencast: [E2E with Azure](https://www.youtube.com/watch?v=Lzl7Y3H7leo)
 
